@@ -53,7 +53,7 @@ pipeline {
                 // run locally by npm install serve 
                 sh '''
                     npm install serve
-                    serve -s build
+                    modules/.bin/serve -s build
                     npx playwright test                    
                 '''
             }    
