@@ -4,12 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             agent {
-                docker {
-                    image 'node:18-alpine3.18'
+                docker { 
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
+                echo 'Building'
                 sh '''
                     ls -la
                     node --version
@@ -20,21 +21,29 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('Test') {
             agent {
-                docker {
-                    image 'node:18-alpine3.18'
+                docker { 
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
-
             steps {
+                echo 'Testing'
                 sh '''
                     test -f build/index.html
+                    grep "JavaScript" build/index.html
                     npm test
                 '''
-            }
+            }    
         }
     }
+
+    post {
+        always {
+            junit 'test-result/junit.xml'
+        }
+    }
+    
 }
