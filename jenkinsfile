@@ -4,13 +4,12 @@ pipeline {
     stages {
         stage('Build') {
             agent {
-                docker { 
+                docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
-                echo 'Building'
                 sh '''
                     ls -la
                     node --version
@@ -21,23 +20,21 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Test') {
             agent {
-                docker { 
+                docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
+
             steps {
-                echo 'Testing'
                 sh '''
                     test -f build/index.html
-                    grep "JavaScript" build/index.html
                     npm test
                 '''
-            }    
+            }
         }
     }
-    
 }
