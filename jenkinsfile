@@ -43,7 +43,7 @@ pipeline {
         stage('E2E') {
             agent {
                 docker { 
-                    image 'mcr.microsoft.com/playwright:v1.40.0-jammy'
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true
                 }
             }
@@ -52,6 +52,7 @@ pipeline {
                 // npm install -g serve will install globally which will cause some permission issues
                 // run locally by npm install serve
                 // & run server in background allowing test to be run 
+                // sleep to wait for the server to start
                 sh '''
                     npm install serve
                     node_modules/.bin/serve -s build &
