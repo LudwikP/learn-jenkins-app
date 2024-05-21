@@ -50,10 +50,11 @@ pipeline {
             steps {
                 echo 'E2E Testing'
                 // npm install -g serve will install globally which will cause some permission issues
-                // run locally by npm install serve 
+                // run locally by npm install serve
+                // & run server in background allowing test to be run 
                 sh '''
                     npm install serve
-                    modules/.bin/serve -s build
+                    node_modules/.bin/serve -s build &
                     npx playwright test                    
                 '''
             }    
