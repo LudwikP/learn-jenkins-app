@@ -43,18 +43,6 @@ pipeline {
                     post {
                         always {
                             junit 'jest-results/junit.xml'
-                            //generated in jenkins syntax generator
-                            //publishing allows to access the content from the side menu of a job 
-                            publishHTML([
-                                allowMissing: false, 
-                                alwaysLinkToLastBuild: false, 
-                                keepAll: false, 
-                                reportDir: 'playwright-report', 
-                                reportFiles: 'index.html', 
-                                reportName: 'Playwright HTML Report', 
-                                reportTitles: '', 
-                                useWrapperFileDirectly: true
-                                ])
                             }
                         }    
                     }
@@ -83,7 +71,6 @@ pipeline {
 
                 post {
                     always {
-                        junit 'jest-results/junit.xml'
                         //generated in jenkins syntax generator
                         //publishing allows to access the content from the side menu of a job 
                         publishHTML([
