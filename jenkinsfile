@@ -22,46 +22,50 @@ pipeline {
                 '''
             }
         }
-        
-        stage('Test') {
-            agent {
-                docker { 
-                    image 'node:18-alpine'
-                    reuseNode true
+        stage('run tests') {
+            parallel {
+                stage('Test') {
+                    agent {
+                        docker { 
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        echo 'Testing'
+                        sh '''
+                        test -f build/index.html
+                        grep "JavaScript" build/index.html
+                        npm test
+                        '''
+                    }    
                 }
-            }
-            steps {
-                echo 'Testing'
-                sh '''
-                    test -f build/index.html
-                    grep "JavaScript" build/index.html
-                    npm test
-                '''
-            }    
-        }
 
-        stage('E2E') {
-            agent {
-                docker { 
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true
+            stage('E2E') {
+                agent {
+                    docker { 
+                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        reuseNode true
+                    }
                 }
+                steps {
+                    echo 'E2E Testing'
+                    // npm install -g serve will install globally which will cause some permission issues
+                    // run locally by npm install serve
+                    // & run server in background allowing test to be run 
+                    // sleep to wait for the server to start
+                    //--reporter=html publishes test report in html - html publisher jenkins plugin in needed
+                    sh '''
+                        npm install serve
+                        node_modules/.bin/serve -s build &
+                        sleep 10
+                        npx playwright test --reporter=html                 
+                    '''
+                }    
             }
-            steps {
-                echo 'E2E Testing'
-                // npm install -g serve will install globally which will cause some permission issues
-                // run locally by npm install serve
-                // & run server in background allowing test to be run 
-                // sleep to wait for the server to start
-                //--reporter=html publishes test report in html - html publisher jenkins plugin in needed
-                sh '''
-                    npm install serve
-                    node_modules/.bin/serve -s build &
-                    sleep 10
-                    npx playwright test --reporter=html                 
-                '''
-            }    
+            }
         }
+        
     }
 
     post {
