@@ -53,11 +53,12 @@ pipeline {
                 // run locally by npm install serve
                 // & run server in background allowing test to be run 
                 // sleep to wait for the server to start
+                //-reporter=html publishes test report in html
                 sh '''
                     npm install serve
                     node_modules/.bin/serve -s build &
                     sleep 10
-                    npx playwright test                    
+                    npx playwright test -reporter=html                 
                 '''
             }    
         }
