@@ -111,6 +111,8 @@ pipeline {
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build
                 '''
+                input message: 'ready to deploy', ok: 'Yes'
+                emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
             }
         }
 
