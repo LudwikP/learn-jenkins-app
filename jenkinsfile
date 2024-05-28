@@ -112,8 +112,54 @@ pipeline {
                 '''
             }
         }
+
+        stage('Prod E2E') {
+                agent {
+                    docker { 
+                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        reuseNode true
+                    }
+                }
+
+                environment {
+                    NETLIFY_SITE_ID = '7216df1a-a0ab-4356-96ed-227605b61f50'
+                    NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+                    CI_ENVIRONMENT_URL = 'https://incandescent-scone-ac0659.netlify.app'
+                }
+
+                steps {
+                    echo 'E2E Testing'
+                    // npm install -g serve will install globally which will cause some permission issues
+                    // run locally by npm install serve
+                    // & run server in background allowing test to be run 
+                    // sleep to wait for the server to start
+                    //--reporter=html publishes test report in html - html publisher jenkins plugin in needed
+                    sh '''
+                        npx playwright test --reporter=html                 
+                    '''
+                }
+
+                post {
+                    always {
+                        //generated in jenkins syntax generator
+                        //publishing allows to access the content from the side menu of a job 
+                        publishHTML([
+                            allowMissing: false, 
+                            alwaysLinkToLastBuild: false, 
+                            keepAll: false, 
+                            reportDir: 'playwright-report', 
+                            reportFiles: 'index.html', 
+                            reportName: 'Prod E2E Playwright HTML Report', 
+                            reportTitles: '', 
+                            useWrapperFileDirectly: true
+                            ])
+                        }
+                    }    
+                }
         
     }
+
+    
 
     post {
         always {
