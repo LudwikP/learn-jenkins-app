@@ -101,6 +101,7 @@ pipeline {
                     reuseNode true
                 }
             }
+            //no --prod flad when deploying will result in draft deploy
             steps {
                 echo 'Deploying staging'
                 sh '''
@@ -120,6 +121,7 @@ pipeline {
                     reuseNode true
                 }
             }
+            //--prod flad when deploying will result in deploy to prod url
             steps {
                 echo 'Deploying Prod'
                 sh '''
