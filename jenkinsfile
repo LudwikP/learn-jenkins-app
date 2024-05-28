@@ -113,7 +113,7 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build
                 '''
                 emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
-                timeout(time: 1, unit: 'Minutes') {
+                timeout(time: 1, unit: 'MINUTES') {
                     input message: 'ready to deploy', ok: 'Yes'
                 }
                 
