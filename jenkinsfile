@@ -169,14 +169,14 @@ pipeline {
                     }  
                 }
 
-        // stage('Approval') {
-        //     steps {
-        //         echo "Approving"
-        //         timeout(time: 1, unit: 'MINUTES') {
-        //             input message: 'ready to deploy', ok: 'Yes'
-        //         }
-        //     }
-        // }
+        stage('Approval') {
+            steps {
+                echo "Approving"
+                // timeout(time: 1, unit: 'MINUTES') {
+                //     input message: 'ready to deploy', ok: 'Yes'
+                // }
+            }
+        }
 
         stage('Deploy Prod with E2E') {
                 agent {
