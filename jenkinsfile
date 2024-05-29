@@ -169,36 +169,16 @@ pipeline {
                     }  
                 }
 
-        stage('Approval') {
-            steps {
-                echo "Approving"
-                timeout(time: 1, unit: 'MINUTES') {
-                    input message: 'ready to deploy', ok: 'Yes'
-                }
-            }
-        }
+        // stage('Approval') {
+        //     steps {
+        //         echo "Approving"
+        //         timeout(time: 1, unit: 'MINUTES') {
+        //             input message: 'ready to deploy', ok: 'Yes'
+        //         }
+        //     }
+        // }
 
-        stage('Prod Deploy') {
-            agent {
-                docker { 
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            //--prod flad when deploying will result in deploy to prod url
-            steps {
-                echo 'Deploying Prod'
-                sh '''
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to prod env site id NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
-
-        stage('Prod E2E') {
+        stage('Deploy Prod with E2E') {
                 agent {
                     docker { 
                         image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -220,6 +200,11 @@ pipeline {
                     // sleep to wait for the server to start
                     //--reporter=html publishes test report in html - html publisher jenkins plugin in needed
                     sh '''
+                        npm install netlify-cli
+                        node_modules/.bin/netlify --version
+                        echo "Deploying to prod env site id NETLIFY_SITE_ID"
+                        node_modules/.bin/netlify status
+                        node_modules/.bin/netlify deploy --dir=build --prod
                         npx playwright test --reporter=html                 
                     '''
                 }
