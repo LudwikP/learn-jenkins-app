@@ -105,6 +105,7 @@ pipeline {
             //timeout(1) - 1 min
             steps {
                 echo 'Deploying staging'
+                //node-jq - reads jsons
                 sh '''
                     npm install netlify-cli
                     npm install node-jq
@@ -112,7 +113,7 @@ pipeline {
                     echo "Deploying to staging env site id NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > staging-deploy-output.json
-                    node_modules/.bin/netlify node-jq '.Site URL' staging-deploy-output.json
+                    node_modules/.bin/node-jq -r '.Site URL' staging-deploy-output.json
                 '''
                 emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
                 
