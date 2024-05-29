@@ -107,10 +107,12 @@ pipeline {
                 echo 'Deploying staging'
                 sh '''
                     npm install netlify-cli
+                    npm install npm-jq
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging env site id NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > staging-deploy-output.json
+                    node_modules/.bin/netlify node-jq '.Site URL' staging-deploy-output.json
                 '''
                 emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
                 
