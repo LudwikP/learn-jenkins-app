@@ -107,7 +107,7 @@ pipeline {
                 echo 'Deploying staging'
                 sh '''
                     npm install netlify-cli
-                    npm install npm-jq
+                    npm install node-jq
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging env site id NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
