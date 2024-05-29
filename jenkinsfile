@@ -137,7 +137,7 @@ pipeline {
                 }
 
                 steps {
-                    echo 'E2E Testing'
+                    echo 'Staging E2E Testing'
                     // npm install -g serve will install globally which will cause some permission issues
                     // run locally by npm install serve
                     // & run server in background allowing test to be run 
@@ -151,6 +151,23 @@ pipeline {
                     '''
                 }
 
+                post {
+                    always {
+                        //generated in jenkins syntax generator
+                        //publishing allows to access the content from the side menu of a job 
+                        publishHTML([
+                            allowMissing: false, 
+                            alwaysLinkToLastBuild: false, 
+                            keepAll: false, 
+                            reportDir: 'playwright-report', 
+                            reportFiles: 'index.html', 
+                            reportName: 'Staging E2E Playwright HTML Report', 
+                            reportTitles: '', 
+                            useWrapperFileDirectly: true
+                            ])
+                        }
+                    }  
+                }
 
         stage('Approval') {
             steps {
