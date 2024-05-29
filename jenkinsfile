@@ -112,13 +112,45 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging env site id NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > staging-deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' staging-deploy-output.json
+                                        
                 '''
+                //Creating variable from script result
+                script {
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r \'.deploy_url\' staging-deploy-output.json", returnStdout: true)
+                }
                 emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
                 
             }
         }
+
+        stage('Staging E2E') {
+                agent {
+                    docker { 
+                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        reuseNode true
+                    }
+                }
+
+                environment {
+                    CI_ENVIRONMENT_URL = "$(STAGING_URL)"
+
+                }
+
+                steps {
+                    echo 'E2E Testing'
+                    // npm install -g serve will install globally which will cause some permission issues
+                    // run locally by npm install serve
+                    // & run server in background allowing test to be run 
+                    // sleep to wait for the server to start
+                    //--reporter=html publishes test report in html - html publisher jenkins plugin in needed
+                    sh '''
+                        npm install serve
+                        node_modules/.bin/serve -s build &
+                        sleep 10
+                        npx playwright test --reporter=html                 
+                    '''
+                }
+
 
         stage('Approval') {
             steps {
