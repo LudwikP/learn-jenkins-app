@@ -110,13 +110,22 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging env site id NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build
+                    node_modules/.bin/netlify deploy --dir=build --json > staging-deploy-output.json
                 '''
                 emailext body: '', subject: 'New version to approve', to: 'pluta.ludwik@gmail.com'
                 timeout(time: 1, unit: 'MINUTES') {
                     input message: 'ready to deploy', ok: 'Yes'
                 }
                 
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                echo "Approving"
+                timeout(time: 1, unit: 'MINUTES') {
+                    input message: 'ready to deploy', ok: 'Yes'
+                }
             }
         }
 
